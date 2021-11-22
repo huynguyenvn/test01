@@ -38,9 +38,11 @@ class Company extends Base
     private function _buildTree($companies, $parentId = 0) {
         $trees = [];
         $companyCost = 0;
+        $totalCost = 0;
         $tempCompanies = $companies;
         foreach ($tempCompanies as $key => $company) {
             if ($company['parentId'] == $parentId) {
+                $companyCost = 0;
                 unset($companies[$key]);
                 list($children, $cost, $companies) = $this->_buildTree($companies, $company['id']);
                 $companyCost = $this->_travel->getTotalCostByCompanyId($company['id']) + $cost;
@@ -50,10 +52,11 @@ class Company extends Base
                     'cost' => $companyCost,
                     'children' => $children,
                 ];
+                $totalCost += $companyCost;
             }
         }
 
-        return [$trees, $companyCost, $companies];
+        return [$trees, $totalCost, $companies];
     }
 
     public function showTree() {
